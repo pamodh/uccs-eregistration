@@ -1,15 +1,17 @@
 var scanner = null;
 var active_camera = -1;
+var camera_mirror = true;
 var datastore = null;
 
 $(document).ready(function() {
     datastore = localforage.createInstance({ name: 'registered-members' });
     $('#qr-start-btn').click(init_scanner);
+    $('#qr-mirror-camera-btn').click(toggle_camera_mirror);
     $('#refresh-data-btn').click(refresh_data);
 });
 
 function init_scanner() {
-    scanner = new Instascan.Scanner({ video: document.getElementById('qr-preview') });
+    scanner = new Instascan.Scanner({ video: document.getElementById('qr-preview'), mirror: camera_mirror });
     scanner.addListener('scan', function (content) {
         code_scanned(content);
         scanner.stop().then(function () {
@@ -17,13 +19,13 @@ function init_scanner() {
             $('#qr-panel').addClass('hidden');
         });
     });
-    change_camera();
-    $('#qr-change-camera-btn').click(change_camera);
+    toggle_camera();
+    $('#qr-change-camera-btn').click(toggle_camera);
     $('#qr-start-panel').addClass('hidden');
     $('#qr-panel').removeClass('hidden');
 }
 
-function change_camera() {
+function toggle_camera() {
     Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
             active_camera++;
@@ -35,6 +37,14 @@ function change_camera() {
         }
     }).catch(function (e) {
         handle_error('Error accessing camera! Check permissions!', e);
+    });
+}
+
+function toggle_camera_mirror() {
+    scanner.stop().then(function () {
+        active_camera--;
+        camera_mirror = ! camera_mirror;
+        init_scanner();
     });
 }
 
