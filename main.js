@@ -6,8 +6,12 @@ $(document).ready(function() {
         }, function(videoError){
             alert('Error opening: ' + videoError);
         });
+    $('#qr-change-camera').click(function () {
+        $('#qr-reader').html5_qrcode_changeCamera();
+        $('#qr-status').html('Changed!');
+    });
 });
 
 function code_scanned(code) {
-
+    
 }
