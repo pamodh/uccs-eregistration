@@ -12,6 +12,10 @@ function init_scanner() {
     scanner = new Instascan.Scanner({ video: document.getElementById('qr-preview') });
     scanner.addListener('scan', function (content) {
         code_scanned(content);
+        scanner.stop().then(function () {
+            $('#qr-start-panel').removeClass('hidden');
+            $('#qr-panel').addClass('hidden');
+        });
     });
     change_camera();
     $('#qr-change-camera-btn').click(change_camera);
@@ -35,7 +39,7 @@ function change_camera() {
 }
 
 function code_scanned(code) {
-    let code = String(code);
+    code = String(code);
     datastore.getItem(code).then(function (record) {
         if (record == null) {
             if (window.confirm('This person has not registered! Scan anyway?')) {
@@ -53,7 +57,9 @@ function code_scanned(code) {
         } else {
             if (window.confirm('Scan ' + code + '?')) {
                 record.scantime = new Date();
-                datastore.setItem(code, record).then().catch(function (e) {
+                datastore.setItem(code, record).then(function () {
+                    refresh_data();
+                }).catch(function (e) {
                     handle_error('Error storing data locally', e)
                 });
             }
@@ -66,12 +72,13 @@ function code_scanned(code) {
 function refresh_data() {
     $('#data-table').find('tbody').empty();
     $('#refresh-data-btn').addClass('hidden');
-    localforage.iterate(function (id, record, i) {
-        $('#data-table').append(String.format(
+    datastore.iterate(function (record, id, i) {
+        console.info(record);
+        $('#data-table').find('tbody').append(sprintf(
             '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>',
             record.id,
             record.name,
-            record.walk_in ? 'Walk-in' : record.register_time,
+            record.walk_in == true ? 'Walk-in' : record.register_time,
             record.scantime
         ));
     }).then(function() {
