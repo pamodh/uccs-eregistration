@@ -4,10 +4,12 @@ CACHE MANIFEST
 index.html
 style.css
 main.js
+io.js
 
 lib/instascan.min.js
 lib/localforage.min.js
 lib/sprintf.min.js
+lib/papaparse.min.js
 
 https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css
 https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js

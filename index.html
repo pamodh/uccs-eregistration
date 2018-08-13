@@ -42,6 +42,12 @@
                 <div class="col-md-4"><a id="load-data-btn" href="#" class="btn btn-primary">Load Registration Data</a></div>
                 <div class="col-md-4"><a id="reset-data-btn" href="#" class="btn btn-danger">Reset All Data</a></div>
                 <div class="col-md-4"><a id="save-data-btn" href="#" class="btn btn-success">Save Scanned Data</a></div>
+
+                <div id="import-file-panel" class="form-group hidden">
+                  <label for="import-file-input">File input</label>
+                  <input type="file" id="import-file-input">
+                  <p class="help-block">Select the file to import</p>
+                </div>
             </div>
         </div>
       </div>
@@ -75,6 +81,8 @@
     <script src="lib/instascan.min.js"></script>
     <script src="lib/localforage.min.js"></script>
     <script src="lib/sprintf.min.js"></script>
+    <script src="lib/papaparse.min.js"></script>
+    <script src="io.js"></script>
     <script src="main.js"></script>
   </body>
 </html>

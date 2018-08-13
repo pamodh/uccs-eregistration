@@ -1,5 +1,5 @@
 var scanner = null;
-var active_camera = -1;
+var active_camera = 0;
 var camera_mirror = true;
 var datastore = null;
 
@@ -8,6 +8,10 @@ $(document).ready(function() {
     $('#qr-start-btn').click(init_scanner);
     $('#qr-mirror-camera-btn').click(toggle_camera_mirror);
     $('#refresh-data-btn').click(refresh_data);
+    $('#save-data-btn').click(export_data);
+    $('#load-data-btn').click(import_data);
+    $('#reset-data-btn').click(function () { datastore.clear(); refresh_data(); });
+    refresh_data();
 });
 
 function init_scanner() {
@@ -19,6 +23,7 @@ function init_scanner() {
             $('#qr-panel').addClass('hidden');
         });
     });
+    active_camera--;
     toggle_camera();
     $('#qr-change-camera-btn').click(toggle_camera);
     $('#qr-start-panel').addClass('hidden');
@@ -29,7 +34,7 @@ function toggle_camera() {
     Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
             active_camera++;
-            if (active_camera >= cameras.length)
+            if (active_camera < 0 || active_camera >= cameras.length)
                 active_camera = 0;
             scanner.start(cameras[active_camera]);
         } else {
@@ -83,7 +88,6 @@ function refresh_data() {
     $('#data-table').find('tbody').empty();
     $('#refresh-data-btn').addClass('hidden');
     datastore.iterate(function (record, id, i) {
-        console.info(record);
         $('#data-table').find('tbody').append(sprintf(
             '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>',
             record.id,
