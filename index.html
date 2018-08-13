@@ -2,30 +2,70 @@
 <html lang="en" manifest="eregistration.appcache">
   <head>
     <meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>UCCS Event E-Registration</title>
     <link rel="stylesheet" href="stylesheet.css">
-	 <!-- Boostrap: -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+    <!-- Boostrap: -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
   </head>
   <body>
-	<div class="container">
-		<div class="header">
-			<h1>UCCS Event E-Registration</h1>
+    <div class="container">
+      <div class="header">
+        <h1>UCCS Event E-Registration</h1>
+      </div>
+          
+      <div class="row">
+        <div id="qr-panel" class="panel panel-default hidden">
+          <div class="panel-body">
+              <video id="qr-preview"></video>
+              <div><a id="qr-change-camera-btn" href="#" class="btn btn-default">Change Camera</a></div>
+          </div>
         </div>
-        
-        <div class="row">
-            <video id="qr-video"></video>
-            <div id="qr-status"></div>
-            <div><a id="qr-change-camera" href="#" class="btn btn-default">Change Camera</a></div>
-        </div>
+      </div>
 
-		<div class="footer">
-			Copyright &copy; 2018 University of Colombo Clinical Society <br>
-			Faculty of Medicine, University of Colombo
-		</div>	
+      <div class="row">
+          <div id="qr-start-panel" class="panel panel-default">
+              <div class="panel-body">
+                  <a id="qr-start-btn" href="#" class="btn btn-primary">Start Scanning!</a>
+              </div>
+          </div>
+      </div>
+
+      <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="col-md-4"><a id="load-data-btn" href="#" class="btn btn-primary">Load Registration Data</a></div>
+                <div class="col-md-4"><a id="reset-data-btn" href="#" class="btn btn-danger">Reset All Data</a></div>
+                <div class="col-md-4"><a id="save-data-btn" href="#" class="btn btn-success">Save Scanned Data</a></div>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h2>Registered Members</h2>
+              <a id="refresh-data-btn" href="#" class="btn btn-default">Refresh Data</a>
+            </div>
+            <div class="panel-body">
+                <table id="data-table" class="table table-striped">
+                  <thead>
+                    <td>UCCS Reg No.</td>
+                    <td>Name</td>
+                    <td>Time of Early Registration</td>
+                    <td>Time Scanned In</td>
+                  </thead>
+                </table>
+            </div>
+          </div>
+      </div>
+
+      <div class="footer">
+        Copyright &copy; 2018 University of Colombo Clinical Society <br>
+        Faculty of Medicine, University of Colombo
+      </div>	
     </div>
     
     <script src="lib/instascan.min.js"></script>
