@@ -1,0 +1,14 @@
+CACHE MANIFEST
+# 2018-08-13:v1
+
+index.html
+style.css
+main.js
+
+lib/html5-qrcode.min.js
+lib/jsqrcode-combined.min.js
+lib/localforage.min.js
+
+https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css
+https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
+https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js
