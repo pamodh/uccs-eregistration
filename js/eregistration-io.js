@@ -14,16 +14,28 @@ function import_data() {
             complete: function (result) {
                 let data = result.data;
                 let headers = data.shift();
+                let promises = [];
                 data.forEach(function (item) {
                     let item_object = {};
                     for (var i = 0; i < headers.length; i++) {
                         item_object[headers[i]] = item[i];
                     }
-                    datastore.setItem(item_object.id, item_object);
-                });                
-                $('#import-file-panel').addClass('hidden');
-                refresh_data();
-                show_alert('Data import complete!');
+                    item_object['walk_in'] = item_object['walk_in'] == 'true';
+                    if (item_object['scan_timestamp'] != null) {
+                        item_object['scan_timestamp'] = new Date(item_object['scan_timestamp']);
+                    }
+                    if (item_object['registration_timestamp'] != null) {
+                        item_object['registration_timestamp'] = new Date(item_object['registration_timestamp']);
+                    }
+                    promises.push(datastore.setItem(item_object.id, item_object));
+                });   
+                Promise.all(promises).then(function () {
+                    $('#import-file-panel').addClass('hidden');
+                    refresh_data();
+                    show_alert('Data import complete!');
+                }).catch(function (e) {
+                    handle_error('Could not read from file into local storage', e);
+                });
             }
         })
     });

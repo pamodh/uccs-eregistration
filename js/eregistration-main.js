@@ -92,7 +92,7 @@ function code_scanned(code) {
                     return;
                 record = {
                     id: code,
-                    name: '<unknown>',
+                    name: null,
                     registration_timestamp: null,
                     scan_timestamp: new Date(),
                     walk_in: true
@@ -130,9 +130,9 @@ function refresh_data() {
     datastore.iterate(function (record, id, i) {
         datatable.row.add([
             s.escapeHTML(record.id),
-            s.escapeHTML(record.name),
-            s.escapeHTML(record.walk_in == true ? '<Walk-in>' : record.registration_timestamp),
-            s.escapeHTML(record.scan_timestamp)
+            s.escapeHTML(record.name == null ? '<Unknown>' : record.name),
+            s.escapeHTML(record.walk_in == true ? '<Walk-in>' : new Date(record.registration_timestamp).toLocaleString('en-GB')),
+            s.escapeHTML(record.scan_timestamp == null ? '' : new Date(record.scan_timestamp).toLocaleString('en-GB'))
         ]);
     }).then(function() {
         $('#refresh-data-btn').removeClass('hidden');
@@ -156,6 +156,7 @@ function reset_data() {
 
 function handle_error(message, e='') {
     show_alert(message + ' ' + e);
+    console.exception(message, e);
 }
 
 function show_alert(message) {
