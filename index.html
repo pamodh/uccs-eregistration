@@ -12,9 +12,9 @@
     <title>UCCS Event E-Registration</title>
     <link rel="stylesheet" href="css/eregistration-main.css">
     <!-- Boostrap and JQuery: -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+    <link rel="stylesheet" href="js/lib/bootstrap/css/bootstrap.min.css">
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/bootstrap/js/bootstrap.min.js"></script> 
   </head>
 
   <body>
@@ -84,6 +84,19 @@
         Faculty of Medicine, University of Colombo
       </div>	
     </div>
+
+    <!-- UpUp for offline capability: -->
+    <script src="upup.min.js"></script>
+    <script>
+      UpUp.start({
+        'cache-version': 'v1.1',
+        'content-url': 'index.html',
+        'assets': ['css/eregistration-main.css', 'js/lib/instascan.min.js', 'js/lib/localforage.min.js', 
+                   'js/lib/sprintf.min.js', 'js/lib/papaparse.min.js', 'js/lib/jquery.min.js',
+                   'js/lib/bootstrap/js/bootstrap.min.js', 'js/lib/bootstrap/css/bootstrap.min.css',
+                   'js/eregistration-io.js', 'js/eregistration-main.js']
+      });
+    </script>
     
     <script src="js/lib/instascan.min.js"></script>
     <script src="js/lib/localforage.min.js"></script>
