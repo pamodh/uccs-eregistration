@@ -8,6 +8,10 @@ body {
 	text-align: center;
 }
 
+table td {
+	text-align: left;
+}
+
 .footer {
 	width: 100%;
     text-align: center;

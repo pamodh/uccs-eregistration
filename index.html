@@ -11,10 +11,10 @@
 
     <title>UCCS Event E-Registration</title>
     <link rel="stylesheet" href="css/eregistration-main.css">
-    <!-- Boostrap and JQuery: -->
     <link rel="stylesheet" href="js/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="js/lib/datatables/datatables.min.css"/>
     <script src="js/lib/jquery.min.js"></script>
-    <script src="js/lib/bootstrap/js/bootstrap.min.js"></script> 
+    <script src="js/lib/bootstrap/js/bootstrap.min.js"></script>
   </head>
 
   <body>
@@ -30,15 +30,31 @@
               <div>
                 <a id="qr-change-camera-btn" href="#" class="btn btn-default">Change Camera</a>
                 <a id="qr-mirror-camera-btn" href="#" class="btn btn-default">Flip Image</a>
+                <a id="qr-stop-btn" href="#" class="btn btn-default">Cancel</a>
               </div>
           </div>
         </div>
       </div>
 
       <div class="row">
+        <div id="manual-entry-panel" class="panel panel-default hidden">
+          <div class="panel-body">
+            <form id="manual-entry-form" action="#" method="GET" class="form-inline">
+                <div class="form-group">
+                    <label for="manual-text-input">Enter Registration Number:</label>
+                    <input id="manual-text-input" type="text" class="form-control" placeholder="UCCS/2018/0001">
+                </div>
+                <input id="manual-submit-btn" type="submit" class="btn btn-primary" value="Submit">
+                <a id="manual-stop-btn" href="#" class="btn btn-default">Cancel</a>
+            </form>
+        </div>
+      </div>
+
+      <div class="row">
           <div id="qr-start-panel" class="panel panel-default">
               <div class="panel-body">
-                  <a id="qr-start-btn" href="#" class="btn btn-primary">Start Scanning!</a>
+                  <a id="qr-start-btn" href="#" class="btn btn-primary">Scan Code</a>
+                  <a id="manual-start-btn" href="#" class="btn btn-default">Enter Manually</a>
               </div>
           </div>
       </div>
@@ -50,10 +66,13 @@
                 <div class="col-md-4"><a id="reset-data-btn" href="#" class="btn btn-danger">Reset All Data</a></div>
                 <div class="col-md-4"><a id="save-data-btn" href="#" class="btn btn-success">Save Scanned Data</a></div>
 
-                <div id="import-file-panel" class="form-group hidden">
-                  <label for="import-file-input">File input</label>
-                  <input type="file" id="import-file-input">
-                  <p class="help-block">Select the file to import</p>
+                <div id="import-file-panel" class="hidden">
+                  <form id="manual-entry-form" action="#" method="GET" class="form-inline">
+                    <div class="form-group">
+                      <label for="import-file-input">File to Import:</label>
+                      <input id="import-file-input" type="file">
+                    </div>
+                  </form>
                 </div>
             </div>
         </div>
@@ -65,13 +84,13 @@
               <h2>Registered Members</h2>
               <a id="refresh-data-btn" href="#" class="btn btn-default">Refresh Data</a>
             </div>
-            <div class="panel-body">
-                <table id="data-table" class="table table-striped">
+            <div class="panel-body table-responsive">
+                <table id="data-table" class="table">
                   <thead>
-                    <td>UCCS Reg No.</td>
-                    <td>Name</td>
-                    <td>Time of Early Registration</td>
-                    <td>Time Scanned In</td>
+                    <th>UCCS Registration Number</th>
+                    <th>Name</th>
+                    <th>Time Registered</th>
+                    <th>Time Scanned-In</th>
                   </thead>
                   <tbody></tbody>
                 </table>
@@ -102,6 +121,9 @@
     <script src="js/lib/localforage.min.js"></script>
     <script src="js/lib/sprintf.min.js"></script>
     <script src="js/lib/papaparse.min.js"></script>
+    <script src="js/lib/datatables/datatables.min.js"></script>    
+    <script src="js/lib/underscore.string.min.js"></script>
+    <script src="js/lib/bootbox.min.js"></script>
     <script src="js/eregistration-io.js"></script>
     <script src="js/eregistration-main.js"></script>
   </body>

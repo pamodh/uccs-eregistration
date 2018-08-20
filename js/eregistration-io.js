@@ -23,6 +23,7 @@ function import_data() {
                 });                
                 $('#import-file-panel').addClass('hidden');
                 refresh_data();
+                show_alert('Data import complete!');
             }
         })
     });
@@ -45,9 +46,11 @@ function export_data() {
 
 function simulate_download(data, filename) {
     //Adapted from https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-    var encodedUri = encodeURI(data);
+    //And from https://stackoverflow.com/questions/25547475/save-to-local-file-from-blob
+    let blob = new Blob([data], { type: 'text/csv' });
+    var blobURL = URL.createObjectURL(blob);
     var link = document.createElement('a');
-    link.setAttribute('href', 'data:application/octet-stream,' + encodedUri);
+    link.setAttribute('href', blobURL);
     link.setAttribute('download', filename);
     link.setAttribute('style', 'display:none');
     link.innerHTML= 'Click Here to download';
