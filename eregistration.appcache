@@ -1,15 +1,17 @@
 CACHE MANIFEST
-# 2018-08-13:v1
+# 2018-08-20:v2
+# Copyright (c) 2018 University of Colombo Clinical Society
+# Faculty of Medicine, University of Colombo
 
 index.html
-style.css
-main.js
-io.js
+css/eregistration-main.css
+js/eregistration-main.js
+js/eregistration-io.js
 
-lib/instascan.min.js
-lib/localforage.min.js
-lib/sprintf.min.js
-lib/papaparse.min.js
+js/lib/instascan.min.js
+js/lib/localforage.min.js
+js/lib/sprintf.min.js
+js/lib/papaparse.min.js
 
 https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css
 https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js

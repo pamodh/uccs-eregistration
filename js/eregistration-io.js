@@ -1,3 +1,8 @@
+/* 
+	Copyright (c) 2018 University of Colombo Clinical Society
+	Faculty of Medicine, University of Colombo
+*/
+
 function import_data() {
     $('#import-file-panel').removeClass('hidden');
     $(document).off('change', '#import-file-input');

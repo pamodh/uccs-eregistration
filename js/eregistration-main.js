@@ -1,3 +1,9 @@
+/* 
+	Copyright (c) 2018 University of Colombo Clinical Society
+	Faculty of Medicine, University of Colombo
+*/
+
+// Globals
 var scanner = null;
 var active_camera = 0;
 var camera_mirror = true;
