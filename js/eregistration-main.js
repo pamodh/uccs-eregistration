@@ -50,6 +50,8 @@ async function init_scanner() {
     return activate_camera(scanner, active_camera).then(function () {
         $('#manual-entry-panel').addClass('hidden');
         $('#qr-panel').removeClass('hidden');
+        $('#manual-text-input').blur();
+        $('#qr-preview').focus().scrollIntoView();
         loading_indicator(false);
     }).catch(function (e) {
         handle_error('Error accessing camera! Check permissions!', e);
