@@ -15,7 +15,7 @@ $(document).ready(function() {
     $('#qr-start-btn').click(init_scanner);
     $('#qr-stop-btn').click(stop_scanner);
     $('#qr-mirror-camera-btn').click(toggle_camera_mirror);
-    $('#qr-change-camera-btn').click(function () { activate_camera(active_camera + 1); });
+    $('#qr-change-camera-btn').click(toggle_active_camera);
 
     $('#manual-start-btn').click(init_manual_entry);
     $('#manual-stop-btn').click(stop_manual_entry);
@@ -92,12 +92,21 @@ async function activate_camera(scanner, camera_index) {
     }
 }
 
+function toggle_active_camera() {
+    stop_scanner().then(function () {
+        active_camera += 1;
+        init_scanner();
+    }).catch(function (e) {
+        handle_error('Error changing camera! Check permissions!', e);
+    });;
+}
+
 function toggle_camera_mirror() {
     stop_scanner().then(function () {
         camera_mirror = ! camera_mirror;
         init_scanner();
     }).catch(function (e) {
-        handle_error('Error changing camera! Check permissions!', e);
+        handle_error('Error flipping camera image! Check permissions!', e);
     });;
 }
 
