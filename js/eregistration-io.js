@@ -4,7 +4,6 @@
 */
 
 function import_data() {
-    $('#import-file-panel').removeClass('hidden');
     $(document).off('change', '#import-file-input');
     $(document).on('change', '#import-file-input', function(evt) {
         let files = evt.target.files;
@@ -36,9 +35,13 @@ function import_data() {
                 }).catch(function (e) {
                     handle_error('Could not read from file into local storage', e);
                 });
+            },
+            error: function (e, file) {
+                handle_error('Could not read data from file. May be file was corrupted.', e);
             }
-        })
+        });
     });
+    $('#import-file-input').trigger('click'); //Show the open dialog
 }
 
 function export_data() {

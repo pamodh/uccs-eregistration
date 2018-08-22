@@ -21,7 +21,11 @@
   <body>
     <div class="container">
       <div class="header">
-        <h1>UCCS Event E-Registration</h1>
+        <h3>UCCS Event E-Registration</h3>
+      </div>
+
+      <div id="loading-indicator" class="row hidden">
+        <img src="images/loader.gif" alt="Please wait. Loading...">
       </div>
           
       <div class="row">
@@ -38,7 +42,7 @@
       </div>
 
       <div class="row">
-        <div id="manual-entry-panel" class="panel panel-default hidden">
+        <div id="manual-entry-panel" class="panel panel-default">
           <div class="panel-body">
             <form id="manual-entry-form" action="#" method="GET" class="form-inline">
                 <div class="form-group">
@@ -46,69 +50,52 @@
                     <input id="manual-text-input" type="text" class="form-control" placeholder="UCCS/2018/0001">
                 </div>
                 <button id="manual-submit-btn" type="submit" class="btn btn-primary">Add Person</button>
-                <button id="manual-stop-btn" type="reset" class="btn btn-default">Cancel</button>
+                <button id="qr-start-btn" class="btn btn-success">Scan Code</button>
             </form>
-        </div>
-      </div>
-
-      <div class="row">
-          <div id="qr-start-panel" class="panel panel-default">
-              <div class="panel-body">
-                  <button id="qr-start-btn" class="btn btn-primary">Scan Code</button>
-                  <button id="manual-start-btn" class="btn btn-default">Enter Manually</button>
-              </div>
-          </div>
-      </div>
-
-      <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="col-md-4"><button id="load-data-btn" class="btn btn-primary">Load Registration Data</button></div>
-                <div class="col-md-4"><button id="reset-data-btn" class="btn btn-danger">Reset All Data</button></div>
-                <div class="col-md-4"><button id="save-data-btn" class="btn btn-success">Save Scanned Data</button></div>
-
-                <div id="import-file-panel" class="hidden">
-                  <form id="manual-entry-form" action="#" method="GET" class="form-inline">
-                    <div class="form-group">
-                      <label for="import-file-input">File to Import:</label>
-                      <input id="import-file-input" type="file">
-                    </div>
-                  </form>
-                </div>
-            </div>
         </div>
       </div>
 
       <div class="row">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h2>Registered Members</h2>
-              <button id="refresh-data-btn" class="btn btn-default">Refresh Data</button>
-              <button id="delete-record-btn" class="btn btn-default hidden">Delete Record</button>
-              <button id="delete-scan-btn" class="btn btn-default hidden">Revert Scan Time</button>
+              <h4>Registered Members</h4>
+
+              <button id="refresh-data-btn" class="btn btn-default">Refresh</button>
+              <button id="load-data-btn" class="btn btn-default">Import</button>
+              <button id="save-data-btn" class="btn btn-default">Export</button>
+              <button id="reset-data-btn" class="btn btn-default">Delete All</button>
+              <button id="delete-record-btn" class="btn btn-default disabled">Delete Selected</button>
+              <button id="delete-scan-btn" class="btn btn-default disabled">Reset Scan Time</button>
             </div>
-            <div class="panel-body table-responsive">
-                <table id="data-table" class="table">
-                  <thead>
-                    <th>UCCS Registration Number</th>
-                    <th>Name</th>
-                    <th>Time Registered</th>
-                    <th>Time Scanned-In</th>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+            <div class="panel-body">
+              <div id="import-file-panel" class="hidden">
+                  <form id="manual-entry-form" action="#" method="GET" class="form-inline">
+                    <div class="form-group">
+                      <label for="import-file-input">File to Import:</label>
+                      <input id="import-file-input" type="file">
+                    </div>
+                  </form>
+              </div>
+              <div class="table-responsive">
+                  <table id="data-table" class="table">
+                      <thead>
+                        <th>UCCS Registration Number</th>
+                        <th>Name</th>
+                        <th>Time Registered</th>
+                        <th>Time Scanned-In</th>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+              </div>
             </div>
           </div>
       </div>
 
       <div class="footer">
-        <p>
-            Copyright &copy; 2018 University of Colombo Clinical Society <br>
-            Faculty of Medicine, University of Colombo
-        </p>
-        <p>
-          This web app is best viewed on Mozilla Firefox 60.0 or Google Chrome 68.0 and above
-        </p>
+          UCCS Event E-Registration version 2.0. <br>
+          (Requires Mozilla Firefox 60.0 or Google Chrome 68.0 and above) <br>
+          Copyright &copy; 2018 University of Colombo Clinical Society <br>
+          Faculty of Medicine, University of Colombo <br>
       </div>	
     </div>
 
@@ -116,7 +103,7 @@
     <script src="upup.min.js"></script>
     <script>
       UpUp.start({
-        'cache-version': 'v1.2',
+        'cache-version': 'v2.0',
         'content-url': 'index.html',
         'assets': ['css/eregistration-main.css', 
                    'js/lib/bootstrap/css/bootstrap.min.css', 

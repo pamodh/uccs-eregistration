@@ -12,6 +12,14 @@ table td {
 	text-align: left;
 }
 
+#loading-indicator {
+	margin: 1em;
+}
+
+#qr-preview {
+	max-width: 100%;
+}
+
 .footer {
 	width: 100%;
     text-align: center;

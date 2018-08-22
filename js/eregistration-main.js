@@ -17,8 +17,6 @@ $(document).ready(function() {
     $('#qr-mirror-camera-btn').click(toggle_camera_mirror);
     $('#qr-change-camera-btn').click(toggle_active_camera);
 
-    $('#manual-start-btn').click(init_manual_entry);
-    $('#manual-stop-btn').click(stop_manual_entry);
     $('#manual-entry-form').submit(function (event) {
         scan_code($('#manual-text-input').val()).then(function() {
             $('#manual-text-input').select();
@@ -37,40 +35,31 @@ $(document).ready(function() {
         paging: false, 
         select: true,
         data: {} });
-    datatable.on('select deselect', update_selection_buttons);
+    datatable.on('select deselect', update_table_editing_buttons);
     refresh_data();
 });
 
-function init_manual_entry() {
-    stop_scanner();
-    $('#qr-start-panel').addClass('hidden');
-    $('#manual-entry-panel').removeClass('hidden');
-    $('#manual-text-input').select();
-}
-
-function stop_manual_entry() {
-    $('#qr-start-panel').removeClass('hidden');
-    $('#manual-entry-panel').addClass('hidden');
-}
-
 async function init_scanner() {
+    loading_indicator(true);
     scanner = new Instascan.Scanner({ video: document.getElementById('qr-preview'), mirror: camera_mirror });
     scanner.addListener('scan', function (content) {
         scan_code(content);
         stop_scanner();
     });
     return activate_camera(scanner, active_camera).then(function () {
-        $('#qr-start-panel').addClass('hidden');
+        $('#manual-entry-panel').addClass('hidden');
         $('#qr-panel').removeClass('hidden');
+        loading_indicator(false);
     }).catch(function (e) {
         handle_error('Error accessing camera! Check permissions!', e);
+        loading_indicator(false);
     });
 }
 
 async function stop_scanner() {
     if (scanner != null) {
         return scanner.stop().then(function () {
-            $('#qr-start-panel').removeClass('hidden');
+            $('#manual-entry-panel').removeClass('hidden');
             $('#qr-panel').addClass('hidden');
             scanner = null;
         }).catch(function (e) {
@@ -148,6 +137,8 @@ async function scan_code(code) {
         return record;
     } catch (error) {
         await handle_error('Error reading/writing locally stored data', error);
+    } finally {
+        refresh_data();
     }
 }
 
@@ -197,7 +188,7 @@ function delete_record() {
         }
         Promise.all(promises).then(function () {
             refresh_data();
-            update_selection_buttons();
+            update_table_editing_buttons();
         }).catch(function (e) { 
             handle_error('Could not read/write local storage', e);
         });
@@ -211,7 +202,8 @@ function delete_scan_timestamp() {
         show_alert('No rows selected!');
         return;
     }
-    show_confirmation(sprintf('Revert scan timestamp of %d row(s)?', rows.count())).then(function (result) {
+    let message = 'Revert scan timestamp of %d row(s)? (Reverting a walk-in scan will delete that record)';
+    show_confirmation(sprintf(message, rows.count())).then(function (result) {
         if (! result)
             return;
         let promises = [];
@@ -228,25 +220,32 @@ function delete_scan_timestamp() {
         }
         Promise.all(promises).then(function () {
             refresh_data();
-            update_selection_buttons();
+            update_table_editing_buttons();
         }).catch(function (e) { 
             handle_error('Could not read/write local storage', e);
         });
     });
 }
 
-function update_selection_buttons() {
+function update_table_editing_buttons() {
     if (datatable.rows({ selected: true }).count() < 1) {
-        $('#delete-record-btn, #delete-scan-btn').addClass('hidden');
+        $('#delete-record-btn, #delete-scan-btn').addClass('disabled');
     } else {
-        $('#delete-record-btn, #delete-scan-btn').removeClass('hidden');
+        $('#delete-record-btn, #delete-scan-btn').removeClass('disabled');
+    }
+}
+
+function loading_indicator(visible) {
+    if (visible) {
+        $('#loading-indicator').removeClass('hidden');
+    } else {
+        $('#loading-indicator').addClass('hidden');
     }
 }
 
 function handle_error(message, e='') {
     show_alert(message + ' ' + e);
     console.exception(message, e);
-    $('.footer').text(message + ' ' + e);
 }
 
 function show_alert(message) {
