@@ -125,7 +125,11 @@ async function scan_code(code) {
                 walk_in: true
             };
             await datastore.setItem(code, record);
-    
+            datatable.row.add([
+                s.escapeHTML(record.id), s.escapeHTML('<Unknown>'), s.escapeHTML('<Walk-in>'),
+                s.escapeHTML(new Date(record.scan_timestamp).toLocaleString('en-GB'))
+            ]);
+
         } else if (record.scan_timestamp != null) {
             await show_alert('This person has already been added at ' + record.scan_timestamp.toLocaleString('en-GB'));
             return null;
@@ -136,16 +140,19 @@ async function scan_code(code) {
                 return null;
             record.scan_timestamp = new Date();
             await datastore.setItem(code, record);
+            let row_index = datatable.row((index, data, node) => data[0] == record.id).index();
+            datatable.cell(row_index, 3).data(record.scan_timestamp.toLocaleString('en-GB'));
         }
         return record;
     } catch (error) {
         await handle_error('Error reading/writing locally stored data', error);
     } finally {
-        refresh_data();
+        datatable.draw();
     }
 }
 
 async function refresh_data() {
+    loading_indicator(true);
     datatable.clear();
     return datastore.iterate(function (record, id, i) {
         datatable.row.add([
@@ -156,9 +163,12 @@ async function refresh_data() {
         ]);
     }).then(function() {
         datatable.draw();
+    }).then(function () {
+        loading_indicator(false);
     }).catch(function (e) {
-        handle_error('Could not read data from local storage', e);
         datatable.draw();
+        loading_indicator(false);
+        handle_error('Could not read data from local storage', e);
     });
 }
 
@@ -186,11 +196,12 @@ function delete_record() {
         for (let i = 0; i < rows.count(); i++) {
             let id = rows_data[i][0];   //First column of row = ID
             promises.push(datastore.getItem(id).then(function (item) {
-                promises.push(datastore.removeItem(id));
+                return datastore.removeItem(id);
             }));
         }
         Promise.all(promises).then(function () {
-            refresh_data();
+            rows.remove();
+            datatable.draw();
             update_table_editing_buttons();
         }).catch(function (e) { 
             handle_error('Could not read/write local storage', e);
@@ -210,19 +221,26 @@ function delete_scan_timestamp() {
         if (! result)
             return;
         let promises = [];
+        let ids_to_delete = [];
         for (let i = 0; i < rows.count(); i++) {
             let id = rows_data[i][0];   //First column of row = ID
             promises.push(datastore.getItem(id).then(function (item) {
                 if (item.walk_in) {
-                    promises.push(datastore.removeItem(id));
+                    ids_to_delete.push(item.id);
+                    return datastore.removeItem(id);
                 } else {
                     item.scan_timestamp = null;
-                    promises.push(datastore.setItem(id, item));
+                    return datastore.setItem(id, item).then(function () {
+                        datatable.cell(rows.indexes(i), 3).data('');
+                    });
                 }
             }));
         }
+        //Do removals after updates otherwise it messes up row indices
         Promise.all(promises).then(function () {
-            refresh_data();
+            datatable.rows((index, data, node) => ids_to_delete.includes(data[0])).remove();
+        }).then(function () {
+            datatable.draw();
             update_table_editing_buttons();
         }).catch(function (e) { 
             handle_error('Could not read/write local storage', e);

@@ -20,6 +20,10 @@ table td {
 	max-width: 100%;
 }
 
+#manual-entry-form {
+	display: inline;
+}
+
 .footer {
 	width: 100%;
     text-align: center;

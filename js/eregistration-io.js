@@ -9,6 +9,7 @@ function import_data() {
         let files = evt.target.files;
         if (files.length <= 0)
             return;
+        loading_indicator(true);
         Papa.parse(files[0], {
             complete: function (result) {
                 let data = result.data;
@@ -19,25 +20,27 @@ function import_data() {
                     for (var i = 0; i < headers.length; i++) {
                         item_object[headers[i]] = item[i];
                     }
+                    if (item_object['id'] == '')
+                        return;
                     item_object['name'] = item_object['name'] == '' ? null : item_object['name'];
                     item_object['walk_in'] = item_object['walk_in'] == 'true';
-                    if (item_object['scan_timestamp'] != null) {
-                        item_object['scan_timestamp'] = new Date(item_object['scan_timestamp']);
-                    }
-                    if (item_object['registration_timestamp'] != null) {
-                        item_object['registration_timestamp'] = new Date(item_object['registration_timestamp']);
-                    }
+                    item_object['scan_timestamp'] = item_object['scan_timestamp'] != '' ? 
+                                                    new Date(item_object['scan_timestamp']) : null;
+                    item_object['registration_timestamp'] = item_object['registration_timestamp'] != '' ? 
+                                                            new Date(item_object['registration_timestamp']) : null;
                     promises.push(datastore.setItem(item_object.id, item_object));
                 });   
                 Promise.all(promises).then(function () {
                     $('#import-file-panel').addClass('hidden');
-                    refresh_data();
+                    refresh_data().then(() => loading_indicator(false));
                     show_alert('Data import complete!');
                 }).catch(function (e) {
+                    loading_indicator(false);
                     handle_error('Could not read from file into local storage', e);
                 });
             },
             error: function (e, file) {
+                loading_indicator(false);
                 handle_error('Could not read data from file. May be file was corrupted.', e);
             }
         });
