@@ -19,6 +19,7 @@ function import_data() {
                     for (var i = 0; i < headers.length; i++) {
                         item_object[headers[i]] = item[i];
                     }
+                    item_object['name'] = item_object['name'] == '' ? null : item_object['name'];
                     item_object['walk_in'] = item_object['walk_in'] == 'true';
                     if (item_object['scan_timestamp'] != null) {
                         item_object['scan_timestamp'] = new Date(item_object['scan_timestamp']);
