@@ -237,6 +237,7 @@ function update_selection_buttons() {
 function handle_error(message, e='') {
     show_alert(message + ' ' + e);
     console.exception(message, e);
+    $('.footer').text(message + ' ' + e);
 }
 
 function show_alert(message) {
