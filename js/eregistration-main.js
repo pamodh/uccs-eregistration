@@ -36,7 +36,8 @@ $(document).ready(function() {
         select: true,
         data: {} });
     datatable.on('select deselect', update_table_editing_buttons);
-    refresh_data();
+    //And finally...
+    refresh_data().then(() => loading_indicator(false)); //Refresh and hide loading spinner
 });
 
 async function init_scanner() {
@@ -142,9 +143,9 @@ async function scan_code(code) {
     }
 }
 
-function refresh_data() {
+async function refresh_data() {
     datatable.clear();
-    datastore.iterate(function (record, id, i) {
+    return datastore.iterate(function (record, id, i) {
         datatable.row.add([
             s.escapeHTML(record.id),
             s.escapeHTML(record.name == null ? '<Unknown>' : record.name),
