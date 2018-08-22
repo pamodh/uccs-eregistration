@@ -24,10 +24,18 @@ function import_data() {
                         return;
                     item_object['name'] = item_object['name'] == '' ? null : item_object['name'];
                     item_object['walk_in'] = item_object['walk_in'] == 'true';
-                    item_object['scan_timestamp'] = item_object['scan_timestamp'] != '' ? 
-                                                    new Date(item_object['scan_timestamp']) : null;
-                    item_object['registration_timestamp'] = item_object['registration_timestamp'] != '' ? 
-                                                            new Date(item_object['registration_timestamp']) : null;
+                    if ('scan_timestamp' in item_object) {
+                        item_object['scan_timestamp'] = item_object['scan_timestamp'] != '' ? 
+                                                        new Date(item_object['scan_timestamp']) : null;
+                    } else {
+                        item_object['scan_timestamp'] = null;
+                    }
+                    if ('registration_timestamp' in item_object) {
+                        item_object['registration_timestamp'] = item_object['registration_timestamp'] != '' ? 
+                                                        new Date(item_object['registration_timestamp']) : null;
+                    } else {
+                        item_object['registration_timestamp'] = null;
+                    }
                     promises.push(datastore.setItem(item_object.id, item_object));
                 });   
                 Promise.all(promises).then(function () {

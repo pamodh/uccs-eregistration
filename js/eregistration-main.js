@@ -51,7 +51,7 @@ async function init_scanner() {
         $('#manual-entry-panel').addClass('hidden');
         $('#qr-panel').removeClass('hidden');
         $('#manual-text-input').blur();
-        $('#qr-preview').focus().scrollIntoView();
+        $('#qr-preview').focus();
         loading_indicator(false);
     }).catch(function (e) {
         handle_error('Error accessing camera! Check permissions!', e);
