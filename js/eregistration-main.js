@@ -20,7 +20,9 @@ $(document).ready(function() {
     $('#manual-start-btn').click(init_manual_entry);
     $('#manual-stop-btn').click(stop_manual_entry);
     $('#manual-entry-form').submit(function (event) {
-        code_scanned($('#manual-text-input').val());
+        scan_code($('#manual-text-input').val()).then(function() {
+            $('#manual-text-input').select();
+        });
         event.preventDefault();
     });
 
@@ -51,95 +53,97 @@ function stop_manual_entry() {
     $('#manual-entry-panel').addClass('hidden');
 }
 
-function init_scanner() {
+async function init_scanner() {
     scanner = new Instascan.Scanner({ video: document.getElementById('qr-preview'), mirror: camera_mirror });
     scanner.addListener('scan', function (content) {
-        code_scanned(content);
+        scan_code(content);
         stop_scanner();
     });
-    activate_camera(active_camera);
-    $('#qr-start-panel').addClass('hidden');
-    $('#qr-panel').removeClass('hidden');
-}
-
-function stop_scanner() {
-    if (scanner != null) {
-        scanner.stop().then(function () {
-            $('#qr-start-panel').removeClass('hidden');
-            $('#qr-panel').addClass('hidden');
-        });
-    }
-}
-
-function activate_camera(camera_num) {
-    Instascan.Camera.getCameras().then(function (cameras) {
-        if (cameras.length > 0) {
-            if (active_camera < 0 || active_camera >= cameras.length)
-                active_camera = 0;
-            scanner.start(cameras[camera_num]).then(function() { active_camera = camera_num; });
-            camera_num++;
-        } else {
-            handle_error('No cameras found on your device! Check permissions!');
-        }
+    return activate_camera(scanner, active_camera).then(function () {
+        $('#qr-start-panel').addClass('hidden');
+        $('#qr-panel').removeClass('hidden');
     }).catch(function (e) {
         handle_error('Error accessing camera! Check permissions!', e);
     });
 }
 
-function toggle_camera_mirror() {
-    scanner.stop().then(function () {
-        camera_mirror = ! camera_mirror;
-        init_scanner();
-    });
+async function stop_scanner() {
+    if (scanner != null) {
+        return scanner.stop().then(function () {
+            $('#qr-start-panel').removeClass('hidden');
+            $('#qr-panel').addClass('hidden');
+            scanner = null;
+        }).catch(function (e) {
+            handle_error('Error shutting down camera! Check permissions!', e);
+        });;
+    }
 }
 
-function code_scanned(code) {
-    code = String(code).trim();
-    if (! code.startsWith('UCCS/')) {
-        show_alert('This does not look like an UCCS ID!');
-        return;
+async function activate_camera(scanner, camera_index) {
+    let cameras = await Instascan.Camera.getCameras();
+    if (cameras.length > 0) {
+        if (camera_index < 0 || camera_index >= cameras.length)
+            camera_index = 0;
+        return scanner.start(cameras[camera_index]).then(function () {
+            active_camera = camera_index;
+        });
+    } else {
+        handle_error('No cameras found on your device! Check permissions!');
     }
-    datastore.getItem(code).then(function (record) {
-        if (record == null) {
-            show_confirmation('This person has not registered! Add anyway?').then(function (result) {
-                if (! result)
-                    return;
-                record = {
-                    id: code,
-                    name: null,
-                    registration_timestamp: null,
-                    scan_timestamp: new Date(),
-                    walk_in: true
-                };
-                datastore.setItem(code, record).then(function () {
-                    refresh_data();
-                }).catch(function (e) {
-                    handle_error('Error storing data locally', e)
-                });
-            });
-        } else if (record.scan_timestamp != null) {
-            show_alert('Already scanned at ' + record.scan_timestamp.toLocaleString('en-GB'));
-        } else {
-            show_confirmation('Scan ' + code + '?').then(function (result) {
-                if (! result)
-                    return;
-                record.scan_timestamp = new Date();
-                datastore.setItem(code, record).then(function () {
-                    refresh_data();
-                }).catch(function (e) {
-                    handle_error('Error storing data locally', e)
-                });
-            });
-        }
+}
+
+function toggle_camera_mirror() {
+    stop_scanner().then(function () {
+        camera_mirror = ! camera_mirror;
+        init_scanner();
     }).catch(function (e) {
-        handle_error('Error accessing locally stored data', e);
-    })
+        handle_error('Error changing camera! Check permissions!', e);
+    });;
+}
+
+async function scan_code(code) {
+    try {
+        code = String(code).trim();
+        if (code.length == 0)
+            return null;
+        if (! code.startsWith('UCCS/')) {
+            let result = await show_confirmation('This does not look like an UCCS ID! Add anyway?');
+            if (! result)
+                return null;
+        }
+        let record = await datastore.getItem(code);
+        if (record == null) {
+            let result = await show_confirmation('This person is not in the list of registered people! Add anyway?')
+            if (! result)
+                return null;
+            record = {
+                id: code,
+                name: null,
+                registration_timestamp: null,
+                scan_timestamp: new Date(),
+                walk_in: true
+            };
+            await datastore.setItem(code, record);
+    
+        } else if (record.scan_timestamp != null) {
+            await show_alert('This person has already been added at ' + record.scan_timestamp.toLocaleString('en-GB'));
+            return null;
+            
+        } else {
+            let result = await show_confirmation('Add ' + code + '?');
+            if (! result)
+                return null;
+            record.scan_timestamp = new Date();
+            await datastore.setItem(code, record);
+        }
+        return record;
+    } catch (error) {
+        await handle_error('Error reading/writing locally stored data', error);
+    }
 }
 
 function refresh_data() {
     datatable.clear();
-    $('#refresh-data-btn').addClass('hidden');
-
     datastore.iterate(function (record, id, i) {
         datatable.row.add([
             s.escapeHTML(record.id),
@@ -148,10 +152,8 @@ function refresh_data() {
             s.escapeHTML(record.scan_timestamp == null ? '' : new Date(record.scan_timestamp).toLocaleString('en-GB'))
         ]);
     }).then(function() {
-        $('#refresh-data-btn').removeClass('hidden');
         datatable.draw();
     }).catch(function (e) {
-        $('#refresh-data-btn').removeClass('hidden');
         handle_error('Could not read data from local storage', e);
         datatable.draw();
     });
