@@ -1,14 +1,14 @@
 {
-  "short_name": "E-Registration",
-  "name": "UCCS E-Registration",
+  "short_name": "UCCS E-Registration",
+  "name": "UCCS Event E-Registration",
   "icons": [
     {
-      "src": "/images/logo-192.png",
+      "src": "images/logo-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/images/logo-512.png",
+      "src": "images/logo-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

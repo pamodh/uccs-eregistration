@@ -29,9 +29,9 @@
           <div class="panel-body">
               <video id="qr-preview"></video>
               <div>
-                <a id="qr-change-camera-btn" href="#" class="btn btn-default">Change Camera</a>
-                <a id="qr-mirror-camera-btn" href="#" class="btn btn-default">Flip Image</a>
-                <a id="qr-stop-btn" href="#" class="btn btn-default">Cancel</a>
+                <button id="qr-change-camera-btn" class="btn btn-default">Change Camera</button>
+                <button id="qr-mirror-camera-btn" class="btn btn-default">Flip Image</button>
+                <button id="qr-stop-btn" class="btn btn-default">Cancel</button>
               </div>
           </div>
         </div>
@@ -45,8 +45,8 @@
                     <label for="manual-text-input">Enter Registration Number:</label>
                     <input id="manual-text-input" type="text" class="form-control" placeholder="UCCS/2018/0001">
                 </div>
-                <input id="manual-submit-btn" type="submit" class="btn btn-primary" value="Submit">
-                <a id="manual-stop-btn" href="#" class="btn btn-default">Cancel</a>
+                <button id="manual-submit-btn" type="submit" class="btn btn-primary">Add Person</button>
+                <button id="manual-stop-btn" type="reset" class="btn btn-default">Cancel</button>
             </form>
         </div>
       </div>
@@ -54,8 +54,8 @@
       <div class="row">
           <div id="qr-start-panel" class="panel panel-default">
               <div class="panel-body">
-                  <a id="qr-start-btn" href="#" class="btn btn-primary">Scan Code</a>
-                  <a id="manual-start-btn" href="#" class="btn btn-default">Enter Manually</a>
+                  <button id="qr-start-btn" class="btn btn-primary">Scan Code</button>
+                  <button id="manual-start-btn" class="btn btn-default">Enter Manually</button>
               </div>
           </div>
       </div>
@@ -63,9 +63,9 @@
       <div class="row">
         <div class="panel panel-default">
             <div class="panel-body">
-                <div class="col-md-4"><a id="load-data-btn" href="#" class="btn btn-primary">Load Registration Data</a></div>
-                <div class="col-md-4"><a id="reset-data-btn" href="#" class="btn btn-danger">Reset All Data</a></div>
-                <div class="col-md-4"><a id="save-data-btn" href="#" class="btn btn-success">Save Scanned Data</a></div>
+                <div class="col-md-4"><button id="load-data-btn" class="btn btn-primary">Load Registration Data</button></div>
+                <div class="col-md-4"><button id="reset-data-btn" class="btn btn-danger">Reset All Data</button></div>
+                <div class="col-md-4"><button id="save-data-btn" class="btn btn-success">Save Scanned Data</button></div>
 
                 <div id="import-file-panel" class="hidden">
                   <form id="manual-entry-form" action="#" method="GET" class="form-inline">
@@ -83,7 +83,9 @@
           <div class="panel panel-default">
             <div class="panel-heading">
               <h2>Registered Members</h2>
-              <a id="refresh-data-btn" href="#" class="btn btn-default">Refresh Data</a>
+              <button id="refresh-data-btn" class="btn btn-default">Refresh Data</button>
+              <button id="delete-record-btn" class="btn btn-default hidden">Delete Record</button>
+              <button id="delete-scan-btn" class="btn btn-default hidden">Revert Scan Time</button>
             </div>
             <div class="panel-body table-responsive">
                 <table id="data-table" class="table">
@@ -100,8 +102,13 @@
       </div>
 
       <div class="footer">
-        Copyright &copy; 2018 University of Colombo Clinical Society <br>
-        Faculty of Medicine, University of Colombo
+        <p>
+            Copyright &copy; 2018 University of Colombo Clinical Society <br>
+            Faculty of Medicine, University of Colombo
+        </p>
+        <p>
+          This web app is best viewed on Mozilla Firefox 60.0 or Google Chrome 68.0 and above
+        </p>
       </div>	
     </div>
 
@@ -109,12 +116,22 @@
     <script src="upup.min.js"></script>
     <script>
       UpUp.start({
-        'cache-version': 'v1.1',
+        'cache-version': 'v1.2',
         'content-url': 'index.html',
-        'assets': ['css/eregistration-main.css', 'js/lib/instascan.min.js', 'js/lib/localforage.min.js', 
-                   'js/lib/sprintf.min.js', 'js/lib/papaparse.min.js', 'js/lib/jquery.min.js',
-                   'js/lib/bootstrap/js/bootstrap.min.js', 'js/lib/bootstrap/css/bootstrap.min.css',
-                   'js/eregistration-io.js', 'js/eregistration-main.js']
+        'assets': ['css/eregistration-main.css', 
+                   'js/lib/bootstrap/css/bootstrap.min.css', 
+                   'js/lib/datatables/datatables.min.css', 
+                   'js/lib/jquery.min.js',
+                   'js/lib/bootstrap/js/bootstrap.min.js',
+                   'js/lib/instascan.min.js', 
+                   'js/lib/localforage.min.js', 
+                   'js/lib/sprintf.min.js', 
+                   'js/lib/papaparse.min.js',
+                   'js/lib/datatables/datatables.min.js',
+                   'js/lib/underscore.string.min.js',
+                   'js/lib/bootbox.min.js',
+                   'js/eregistration-io.js', 
+                   'js/eregistration-main.js']
       });
     </script>
     

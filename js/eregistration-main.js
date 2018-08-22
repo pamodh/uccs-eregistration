@@ -8,28 +8,39 @@ var scanner = null;
 var active_camera = 1;
 var camera_mirror = false;
 var datastore = null;
+var datatable = null;
 
 $(document).ready(function() {
     datastore = localforage.createInstance({ name: 'registered-members' });
-    $('#manual-start-btn').click(init_manual_entry);
-    $('#manual-stop-btn').click(stop_manual_entry);
     $('#qr-start-btn').click(init_scanner);
     $('#qr-stop-btn').click(stop_scanner);
     $('#qr-mirror-camera-btn').click(toggle_camera_mirror);
     $('#qr-change-camera-btn').click(function () { activate_camera(active_camera + 1); });
+
+    $('#manual-start-btn').click(init_manual_entry);
+    $('#manual-stop-btn').click(stop_manual_entry);
+    $('#manual-entry-form').submit(function (event) {
+        code_scanned($('#manual-text-input').val());
+        event.preventDefault();
+    });
+
     $('#refresh-data-btn').click(refresh_data);
+    $('#delete-record-btn').click(delete_record);
+    $('#delete-scan-btn').click(delete_scan_timestamp);
     $('#save-data-btn').click(export_data);
     $('#load-data-btn').click(import_data);
     $('#reset-data-btn').click(reset_data);
-    $('#data-table').DataTable({ 'paging': false, 'data': {} });
+    
+    datatable = $('#data-table').DataTable({ 
+        paging: false, 
+        select: true,
+        data: {} });
+    datatable.on('select deselect', update_selection_buttons);
     refresh_data();
 });
 
 function init_manual_entry() {
     stop_scanner();
-    $('#manual-entry-form').submit(function () {
-        code_scanned($('#manual-text-input').val());
-    });
     $('#qr-start-panel').addClass('hidden');
     $('#manual-entry-panel').removeClass('hidden');
     $('#manual-text-input').select();
@@ -77,17 +88,20 @@ function activate_camera(camera_num) {
 
 function toggle_camera_mirror() {
     scanner.stop().then(function () {
-        active_camera--;
         camera_mirror = ! camera_mirror;
         init_scanner();
     });
 }
 
 function code_scanned(code) {
-    code = String(code);
+    code = String(code).trim();
+    if (! code.startsWith('UCCS/')) {
+        show_alert('This does not look like an UCCS ID!');
+        return;
+    }
     datastore.getItem(code).then(function (record) {
         if (record == null) {
-            show_confirmation('This person has not registered! Scan anyway?').then(function (result) {
+            show_confirmation('This person has not registered! Add anyway?').then(function (result) {
                 if (! result)
                     return;
                 record = {
@@ -104,7 +118,7 @@ function code_scanned(code) {
                 });
             });
         } else if (record.scan_timestamp != null) {
-            show_alert('Already scanned at ' + record.scan_timestamp);
+            show_alert('Already scanned at ' + record.scan_timestamp.toLocaleString('en-GB'));
         } else {
             show_confirmation('Scan ' + code + '?').then(function (result) {
                 if (! result)
@@ -123,7 +137,6 @@ function code_scanned(code) {
 }
 
 function refresh_data() {
-    let datatable = $('#data-table').dataTable().api();
     datatable.clear();
     $('#refresh-data-btn').addClass('hidden');
 
@@ -152,6 +165,71 @@ function reset_data() {
             refresh_data();
         }); 
     });
+}
+
+function delete_record() {
+    let rows = datatable.rows({selected: true});
+    let rows_data = rows.data();
+    if (rows.count() < 1) {
+        show_alert('No rows selected!');
+        return;
+    }
+    show_confirmation(sprintf('Delete %d row(s)?', rows.count())).then(function (result) {
+        if (! result)
+            return;
+        let promises = [];
+        for (let i = 0; i < rows.count(); i++) {
+            let id = rows_data[i][0];   //First column of row = ID
+            promises.push(datastore.getItem(id).then(function (item) {
+                promises.push(datastore.removeItem(id));
+            }));
+        }
+        Promise.all(promises).then(function () {
+            refresh_data();
+            update_selection_buttons();
+        }).catch(function (e) { 
+            handle_error('Could not read/write local storage', e);
+        });
+    });
+}
+
+function delete_scan_timestamp() {
+    let rows = datatable.rows({selected: true});
+    let rows_data = rows.data();
+    if (rows.count() < 1) {
+        show_alert('No rows selected!');
+        return;
+    }
+    show_confirmation(sprintf('Revert scan timestamp of %d row(s)?', rows.count())).then(function (result) {
+        if (! result)
+            return;
+        let promises = [];
+        for (let i = 0; i < rows.count(); i++) {
+            let id = rows_data[i][0];   //First column of row = ID
+            promises.push(datastore.getItem(id).then(function (item) {
+                if (item.walk_in) {
+                    promises.push(datastore.removeItem(id));
+                } else {
+                    item.scan_timestamp = null;
+                    promises.push(datastore.setItem(id, item));
+                }
+            }));
+        }
+        Promise.all(promises).then(function () {
+            refresh_data();
+            update_selection_buttons();
+        }).catch(function (e) { 
+            handle_error('Could not read/write local storage', e);
+        });
+    });
+}
+
+function update_selection_buttons() {
+    if (datatable.rows({ selected: true }).count() < 1) {
+        $('#delete-record-btn, #delete-scan-btn').addClass('hidden');
+    } else {
+        $('#delete-record-btn, #delete-scan-btn').removeClass('hidden');
+    }
 }
 
 function handle_error(message, e='') {
