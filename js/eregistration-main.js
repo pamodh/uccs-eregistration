@@ -35,7 +35,7 @@ $(document).ready(function() {
         paging: false, 
         select: true,
         data: {} });
-    datatable.on('select deselect', update_table_editing_buttons);
+    datatable.on('select deselect', update_table_selection_status);
     //And finally...
     refresh_data().then(() => loading_indicator(false)); //Refresh and hide loading spinner
 });
@@ -202,7 +202,7 @@ function delete_record() {
         Promise.all(promises).then(function () {
             rows.remove();
             datatable.draw();
-            update_table_editing_buttons();
+            update_table_selection_status();
         }).catch(function (e) { 
             handle_error('Could not read/write local storage', e);
         });
@@ -241,18 +241,22 @@ function delete_scan_timestamp() {
             datatable.rows((index, data, node) => ids_to_delete.includes(data[0])).remove();
         }).then(function () {
             datatable.draw();
-            update_table_editing_buttons();
+            update_table_selection_status();
         }).catch(function (e) { 
             handle_error('Could not read/write local storage', e);
         });
     });
 }
 
-function update_table_editing_buttons() {
-    if (datatable.rows({ selected: true }).count() < 1) {
+function update_table_selection_status() {
+    let rows = datatable.rows({selected: true});
+    if (rows.count() < 1) {
         $('#delete-record-btn, #delete-scan-btn').addClass('disabled');
     } else {
         $('#delete-record-btn, #delete-scan-btn').removeClass('disabled');
+        let selected_id = rows.data()[0][0];
+        if (selected_id != null)
+            $('#manual-text-input').val(selected_id);
     }
 }
 
