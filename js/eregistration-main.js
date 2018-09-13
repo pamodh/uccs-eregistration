@@ -7,6 +7,7 @@
 var scanner = null;
 var active_camera = 1;
 var camera_mirror = false;
+var camera_permission_asked = false;
 var datastore = null;
 var datatable = null;
 
@@ -72,6 +73,15 @@ async function stop_scanner() {
 }
 
 async function activate_camera(scanner, camera_index) {
+    if (! camera_permission_asked) {
+        try {
+            let stream = await navigator.mediaDevices.getUserMedia({video: { facingMode: "environment" }});
+            stream.getTracks().forEach(track => track.stop());
+            camera_permission_asked = true;
+        } catch (error) {
+            handle_error('Error accessing camera! Check permissions!', error);
+        }
+    }
     let cameras = await Instascan.Camera.getCameras();
     if (cameras.length > 0) {
         if (camera_index < 0 || camera_index >= cameras.length)
