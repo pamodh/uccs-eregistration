@@ -117,11 +117,11 @@ async function scan_code(code) {
         code = String(code).trim();
         if (code.length == 0)
             return null;
-        if (! code.startsWith('UCCS/')) {
-            let result = await show_confirmation('This does not look like an UCCS ID! Add anyway?');
-            if (! result)
-                return null;
-        }
+        // if (! code.startsWith('UCCS/')) {
+        //     let result = await show_confirmation('This does not look like an UCCS ID! Add anyway?');
+        //     if (! result)
+        //         return null;
+        // }
         let record = await datastore.getItem(code);
         if (record == null) {
             let result = await show_confirmation('This person is not in the list of registered people! Add anyway?')
